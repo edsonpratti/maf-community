@@ -78,14 +78,14 @@ export async function GET(
     if (error) throw error
 
     // Group by type and count
-    const grouped = data.reduce((acc: any, reaction) => {
+    const grouped = data.reduce((acc: any, reaction: any) => {
       acc[reaction.type] = (acc[reaction.type] || 0) + 1
       return acc
     }, {})
 
     return NextResponse.json({
       reactions: grouped,
-      userReactions: data.filter(r => r.user_id === user.id).map(r => r.type),
+      userReactions: data.filter((r: any) => r.user_id === user.id).map((r: any) => r.type),
     })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })

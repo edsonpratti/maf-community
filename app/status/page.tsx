@@ -59,7 +59,7 @@ export default async function StatusPage() {
     },
   }
 
-  const status = statusConfig[profile.status_access]
+  const status = statusConfig[profile.status_access as keyof typeof statusConfig]
   const Icon = status.icon
 
   if (profile.status_access === 'ACTIVE') {

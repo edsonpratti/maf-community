@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 export default async function MaterialsPage() {
   const supabase = await createClient()
-  
+
   const { data: materials } = await supabase
     .from('materials')
     .select('*')
@@ -52,7 +52,7 @@ export default async function MaterialsPage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {materials?.map((material) => (
+          {materials?.map((material: any) => (
             <Card key={material.id} className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <div className="flex items-start justify-between">

@@ -35,7 +35,7 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<Profile[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>('ALL')
-  const supabase = createClient()
+  const supabase = createClient() as any
 
   useEffect(() => {
     loadUsers()
@@ -139,9 +139,8 @@ export default function AdminUsersPage() {
                   <p className="text-sm text-gray-500">{user.email}</p>
                   <div className="mt-2 flex gap-2 items-center">
                     <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        statusColors[user.status_access as keyof typeof statusColors]
-                      }`}
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[user.status_access as keyof typeof statusColors]
+                        }`}
                     >
                       {statusLabels[user.status_access as keyof typeof statusLabels]}
                     </span>

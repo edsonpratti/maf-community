@@ -44,7 +44,7 @@ export default function FeedPage() {
 
     // Buscar perfis dos autores
     if (postsData && postsData.length > 0) {
-      const userIds = [...new Set(postsData.map(post => post.user_id))]
+      const userIds = [...new Set(postsData.map((post: any) => post.user_id))]
       const { data: profilesData } = await supabase
         .from('profiles')
         .select('id, full_name, avatar_url, verified_badge')
@@ -52,12 +52,12 @@ export default function FeedPage() {
 
       // Criar mapa de perfis
       const profilesMap: Record<string, any> = {}
-      profilesData?.forEach(profile => {
+      profilesData?.forEach((profile: any) => {
         profilesMap[profile.id] = profile
       })
 
       // Combinar dados
-      const postsWithProfiles = postsData.map(post => ({
+      const postsWithProfiles = postsData.map((post: any) => ({
         ...post,
         profiles: profilesMap[post.user_id]
       }))

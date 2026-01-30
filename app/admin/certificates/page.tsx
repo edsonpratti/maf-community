@@ -34,7 +34,7 @@ export default function AdminCertificatesPage() {
   const [certificates, setCertificates] = useState<Certificate[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<string>('PENDING')
-  const supabase = createClient()
+  const supabase = createClient() as any
 
   useEffect(() => {
     loadCertificates()
@@ -43,7 +43,7 @@ export default function AdminCertificatesPage() {
 
   async function loadCertificates() {
     setLoading(true)
-    
+
     // Buscar certificados
     let certQuery = supabase
       .from('certificates')
@@ -64,29 +64,29 @@ export default function AdminCertificatesPage() {
 
     // Buscar perfis dos usuários
     if (certsData && certsData.length > 0) {
-      const userIds = certsData.map(cert => cert.user_id)
+      const userIds = certsData.map((cert: any) => cert.user_id)
       const { data: profilesData } = await supabase
         .from('profiles')
         .select('id, full_name, email')
         .in('id', userIds)
 
       // Combinar dados
-      const certificatesWithProfiles = certsData.map(cert => ({
+      const certificatesWithProfiles = certsData.map((cert: any) => ({
         ...cert,
-        profiles: profilesData?.find(p => p.id === cert.user_id) || { full_name: null, email: '' }
+        profiles: profilesData?.find((p: any) => p.id === cert.user_id) || { full_name: null, email: '' }
       }))
 
       setCertificates(certificatesWithProfiles)
     } else {
       setCertificates([])
     }
-    
+
     setLoading(false)
   }
 
   async function reviewCertificate(certId: string, userId: string, status: 'APPROVED' | 'REJECTED') {
     const { data: { user } } = await supabase.auth.getUser()
-    
+
     if (!user) {
       alert('Usuário não autenticado')
       return
@@ -111,9 +111,9 @@ export default function AdminCertificatesPage() {
     if (status === 'APPROVED') {
       const { error: userError } = await supabase
         .from('profiles')
-        .update({ 
+        .update({
           status_access: 'ACTIVE',
-          verified_badge: true 
+          verified_badge: true
         })
         .eq('id', userId)
 
@@ -188,9 +188,8 @@ export default function AdminCertificatesPage() {
                   <p className="text-sm text-gray-500">{cert.profiles?.email}</p>
                   <div className="mt-2 flex gap-2 items-center">
                     <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        statusColors[cert.review_status as keyof typeof statusColors]
-                      }`}
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[cert.review_status as keyof typeof statusColors]
+                        }`}
                     >
                       {statusLabels[cert.review_status as keyof typeof statusLabels]}
                     </span>
@@ -216,7 +215,7 @@ export default function AdminCertificatesPage() {
                   >
                     📥 Baixar
                   </Button>
-                  
+
                   {cert.review_status === 'PENDING' && (
                     <>
                       <Button

@@ -6,7 +6,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const supabase = await createClient()
+  const supabase = (await createClient()) as any
 
   const {
     data: { user },
