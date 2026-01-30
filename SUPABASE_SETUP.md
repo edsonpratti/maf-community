@@ -165,7 +165,7 @@ No SQL Editor, execute:
 -- Substitua 'USER_ID_AQUI' pelo ID do usuário criado
 UPDATE profiles
 SET role = 'ADMIN', status_access = 'ACTIVE', verified_badge = true
-WHERE id = 'USER_ID_AQUI';
+WHERE id = '96b62fe8-42eb-41c2-abec-b74380034d85';
 ```
 
 ## 9. Testar Conexão
