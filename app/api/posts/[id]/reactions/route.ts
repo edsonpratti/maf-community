@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
@@ -14,7 +14,7 @@ export async function POST(
     }
 
     const { type } = await request.json()
-    const postId = params.id
+    const { id: postId } = await params
 
     // Check if reaction already exists
     const { data: existing } = await supabase
@@ -58,7 +58,7 @@ export async function POST(
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient()
@@ -68,7 +68,7 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const postId = params.id
+    const { id: postId } = await params
 
     const { data, error } = await supabase
       .from('reactions')

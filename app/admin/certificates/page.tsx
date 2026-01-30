@@ -38,6 +38,7 @@ export default function AdminCertificatesPage() {
 
   useEffect(() => {
     loadCertificates()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter])
 
   async function loadCertificates() {
