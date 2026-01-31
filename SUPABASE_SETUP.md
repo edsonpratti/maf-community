@@ -24,6 +24,7 @@ No dashboard do Supabase:
 7. Crie nova query e repita com `supabase/migrations/003_handle_new_user.sql`
 8. Crie nova query e repita com `supabase/migrations/004_fix_rls_recursion.sql`
 9. Crie nova query e repita com `supabase/migrations/005_allow_admin_updates.sql`
+10. Crie nova query e repita com `supabase/migrations/006_add_city_to_profiles.sql`
 
 ## 3. Configurar Storage
 
