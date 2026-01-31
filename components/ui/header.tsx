@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { Button } from './button'
 
 type HeaderProps = {
@@ -27,36 +28,36 @@ export function Header({ userRole, userName }: HeaderProps) {
             <h1 className="text-xl font-bold text-gray-900">
               MAF Community
             </h1>
-            <nav className="hidden md:flex gap-4">
-              <a
+            <nav className="hidden md:flex gap-6">
+              <Link
                 href="/app/feed"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                className="text-gray-600 hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors"
               >
                 Feed
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/app/materials"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                className="text-gray-600 hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors"
               >
                 Materiais
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/app/profile"
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+                className="text-gray-600 hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors"
               >
                 Perfil
-              </a>
+              </Link>
               {userRole === 'ADMIN' && (
-                <a
-                  href="/admin"
-                  className="text-blue-600 hover:text-blue-700 px-3 py-2 rounded-md text-sm font-medium bg-blue-50"
+                <Link
+                  href="/admin/dashboard"
+                  className="text-primary hover:text-primary/80 px-3 py-2 rounded-md text-sm font-bold bg-primary/5 border border-primary/20 flex items-center gap-1 transition-colors"
                 >
                   🛡️ Admin
-                </a>
+                </Link>
               )}
             </nav>
           </div>
-          
+
           <div className="flex items-center gap-3">
             <span className="text-sm text-gray-600 hidden sm:inline">
               {userName}
