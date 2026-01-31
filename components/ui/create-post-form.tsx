@@ -4,6 +4,13 @@ import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from './button'
 import { Card } from './card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './select'
 
 type CreatePostFormProps = {
   onPostCreated?: () => void
@@ -11,13 +18,14 @@ type CreatePostFormProps = {
 
 export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
   const [content, setContent] = useState('')
+  const [category, setCategory] = useState('GERAL')
   const [loading, setLoading] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
   const supabase = createClient()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    
+
     if (!content.trim()) {
       alert('Escreva algo para publicar!')
       return
@@ -27,7 +35,7 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
 
     try {
       const { data: { user } } = await supabase.auth.getUser()
-      
+
       if (!user) {
         alert('Você precisa estar logado')
         return
@@ -38,6 +46,7 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
         .insert({
           user_id: user.id,
           content: content.trim(),
+          category: category,
           status: 'PUBLISHED',
           visibility: 'COMMUNITY_ONLY',
         })
@@ -47,6 +56,7 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
         alert('Erro ao criar post: ' + error.message)
       } else {
         setContent('')
+        setCategory('GERAL')
         setIsExpanded(false)
         alert('Post criado com sucesso!')
         onPostCreated?.()
@@ -77,28 +87,45 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
               className="w-full border-0 focus:ring-0 resize-none text-gray-900 placeholder-gray-400 bg-transparent"
               rows={isExpanded ? 4 : 1}
             />
-            
+
             {isExpanded && (
-              <div className="flex justify-end gap-2 mt-3 pt-3 border-t">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setIsExpanded(false)
-                    setContent('')
-                  }}
-                  disabled={loading}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  type="submit"
-                  size="sm"
-                  disabled={loading || !content.trim()}
-                >
-                  {loading ? 'Publicando...' : 'Publicar'}
-                </Button>
+              <div className="flex items-center justify-between mt-3 pt-3 border-t">
+                <div className="w-40">
+                  <Select value={category} onValueChange={setCategory}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Categoria" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="GERAL">Geral</SelectItem>
+                      <SelectItem value="RESULTADOS">Resultados</SelectItem>
+                      <SelectItem value="DUVIDAS">Dúvidas</SelectItem>
+                      <SelectItem value="IDEIAS">Ideias</SelectItem>
+                      <SelectItem value="MATERIAIS">Materiais</SelectItem>
+                      <SelectItem value="AVISOS_OFICIAIS">Avisos Oficiais</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setIsExpanded(false)
+                      setContent('')
+                    }}
+                    disabled={loading}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    type="submit"
+                    size="sm"
+                    disabled={loading || !content.trim()}
+                  >
+                    {loading ? 'Publicando...' : 'Publicar'}
+                  </Button>
+                </div>
               </div>
             )}
           </div>
