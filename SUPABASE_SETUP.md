@@ -22,6 +22,7 @@ No dashboard do Supabase:
 5. Aguarde confirmação de sucesso
 6. Crie nova query e repita com `supabase/migrations/002_rls_policies.sql`
 7. Crie nova query e repita com `supabase/migrations/003_handle_new_user.sql`
+8. Crie nova query e repita com `supabase/migrations/004_fix_rls_recursion.sql`
 
 ## 3. Configurar Storage
 

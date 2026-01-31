@@ -57,6 +57,7 @@ export default function AdminUsersPage() {
 
     if (error) {
       console.error('Erro ao carregar usuários:', error)
+      alert('Erro ao carregar usuários: ' + error.message)
     } else {
       setUsers(data || [])
     }
