@@ -57,6 +57,13 @@ export default async function StatusPage() {
       color: 'text-red-600',
       bg: 'bg-red-50',
     },
+    EXPIRED: {
+      icon: Clock,
+      title: 'Acesso Expirado',
+      description: 'Sua licença temporária expirou. Renove para continuar com acesso.',
+      color: 'text-gray-600',
+      bg: 'bg-gray-100',
+    },
   }
 
   const status = statusConfig[profile.status_access as keyof typeof statusConfig]

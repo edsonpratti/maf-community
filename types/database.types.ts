@@ -15,8 +15,8 @@ export type Database = {
           full_name: string
           avatar_url: string | null
           bio: string | null
-          role: 'USER' | 'ADMIN' | 'MOD'
-          status_access: 'PENDING' | 'UNDER_REVIEW' | 'ACTIVE' | 'SUSPENDED' | 'REVOKED'
+          role: 'USER' | 'ADMIN' | 'MOD' | 'SUPER_ADMIN'
+          status_access: 'PENDING' | 'UNDER_REVIEW' | 'ACTIVE' | 'SUSPENDED' | 'REVOKED' | 'EXPIRED'
           verified_badge: boolean
           created_at: string
         }
@@ -25,8 +25,9 @@ export type Database = {
           full_name: string
           avatar_url?: string | null
           bio?: string | null
-          role?: 'USER' | 'ADMIN' | 'MOD'
-          status_access?: 'PENDING' | 'UNDER_REVIEW' | 'ACTIVE' | 'SUSPENDED' | 'REVOKED'
+          city?: string | null
+          role?: 'USER' | 'ADMIN' | 'MOD' | 'SUPER_ADMIN'
+          status_access?: 'PENDING' | 'UNDER_REVIEW' | 'ACTIVE' | 'SUSPENDED' | 'REVOKED' | 'EXPIRED'
           verified_badge?: boolean
           created_at?: string
         }
@@ -35,8 +36,9 @@ export type Database = {
           full_name?: string
           avatar_url?: string | null
           bio?: string | null
-          role?: 'USER' | 'ADMIN' | 'MOD'
-          status_access?: 'PENDING' | 'UNDER_REVIEW' | 'ACTIVE' | 'SUSPENDED' | 'REVOKED'
+          city?: string | null
+          role?: 'USER' | 'ADMIN' | 'MOD' | 'SUPER_ADMIN'
+          status_access?: 'PENDING' | 'UNDER_REVIEW' | 'ACTIVE' | 'SUSPENDED' | 'REVOKED' | 'EXPIRED'
           verified_badge?: boolean
           created_at?: string
         }
