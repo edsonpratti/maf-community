@@ -26,6 +26,8 @@ No dashboard do Supabase:
 9. Crie nova query e repita com `supabase/migrations/005_allow_admin_updates.sql`
 10. Crie nova query e repita com `supabase/migrations/006_add_city_to_profiles.sql`
 11. Crie nova query e repita com `supabase/migrations/007_update_roles_and_status.sql`
+12. Crie nova query e repita com `supabase/migrations/008_add_post_categories.sql`
+13. Crie nova query e repita com `supabase/migrations/009_enhance_materials.sql`
 
 ## 3. Configurar Storage
 
