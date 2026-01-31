@@ -73,12 +73,19 @@ export default async function ProfilePage() {
                   <div className="flex items-center gap-2">
                     <h2 className="text-2xl font-bold">{profile.full_name}</h2>
                     {profile.verified_badge && (
-                      <span className="text-blue-500 text-xl">✓</span>
+                      <span className="text-blue-500 text-xl" title="Habilitada Verificada">✓</span>
                     )}
                   </div>
-                  <p className="text-muted-foreground">{user.email}</p>
+                  <div className="flex flex-col gap-1 mt-1 text-sm text-muted-foreground">
+                    <p>{user.email}</p>
+                    {profile.city && (
+                      <p className="flex items-center gap-1">
+                        📍 {profile.city}
+                      </p>
+                    )}
+                  </div>
                   {profile.bio && (
-                    <p className="mt-2 text-sm">{profile.bio}</p>
+                    <p className="mt-4 text-sm leading-relaxed max-w-lg">{profile.bio}</p>
                   )}
                 </div>
               </div>
@@ -92,21 +99,21 @@ export default async function ProfilePage() {
               </div>
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-3 gap-4 text-center">
+          <CardContent className="pt-6 border-t">
+            <div className="grid grid-cols-3 gap-8 text-center divide-x">
               <div>
-                <div className="text-2xl font-bold">{posts?.length || 0}</div>
-                <div className="text-sm text-muted-foreground">Posts</div>
+                <div className="text-3xl font-bold text-primary">{posts?.length || 0}</div>
+                <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground mt-1">Contribuições</div>
               </div>
               <div>
-                <div className="text-2xl font-bold">
-                  {profile.role === 'ADMIN' ? 'Admin' : profile.role === 'MOD' ? 'Moderador' : 'Membro'}
+                <div className="text-lg font-bold mt-1.5">
+                  {profile.role === 'ADMIN' ? 'Admin' : profile.role === 'MOD' ? 'Moderadora' : 'Habilitada'}
                 </div>
-                <div className="text-sm text-muted-foreground">Função</div>
+                <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground mt-2">Nível</div>
               </div>
               <div>
-                <div className="text-2xl font-bold">{formatDate(profile.created_at)}</div>
-                <div className="text-sm text-muted-foreground">Membro desde</div>
+                <div className="text-lg font-bold mt-1.5">{formatDate(profile.created_at)}</div>
+                <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground mt-2">Data de Habilitação</div>
               </div>
             </div>
           </CardContent>
@@ -114,23 +121,32 @@ export default async function ProfilePage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Minhas Postagens</CardTitle>
+            <CardTitle>Histórico de Contribuições</CardTitle>
           </CardHeader>
           <CardContent>
             {posts && posts.length > 0 ? (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {posts.map((post: any) => (
-                  <div key={post.id} className="border-b pb-4 last:border-0">
-                    <p className="whitespace-pre-wrap">{post.content}</p>
-                    <p className="text-xs text-muted-foreground mt-2">
-                      {formatDate(post.created_at)}
-                    </p>
+                  <div key={post.id} className="border-b pb-6 last:border-0 last:pb-0">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
+                        {post.category || 'GERAL'}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {formatDate(post.created_at)}
+                      </span>
+                    </div>
+                    <p className="whitespace-pre-wrap leading-relaxed text-sm">{post.content}</p>
+                    <div className="flex gap-4 mt-3 text-muted-foreground text-xs">
+                      <span>❤️ {post.reactions?.filter((r: any) => r.type === 'LIKE').length || 0}</span>
+                      <span>💬 {post.comments?.length || 0}</span>
+                    </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-center text-muted-foreground py-8">
-                Você ainda não fez nenhuma postagem
+              <p className="text-center text-muted-foreground py-12">
+                Nenhuma contribuição pública ainda.
               </p>
             )}
           </CardContent>
