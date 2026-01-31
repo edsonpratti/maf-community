@@ -2,11 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { CreatePostForm } from '@/components/ui/create-post-form'
-import { formatRelativeTime } from '@/lib/utils'
-import { Heart, MessageCircle, Share2 } from 'lucide-react'
+import { PostCard } from '@/components/feed/post-card'
+import { Loader2 } from 'lucide-react'
 
 type Post = {
   id: string
@@ -18,20 +16,40 @@ type Post = {
     avatar_url: string | null
     verified_badge: boolean
   }
+  user_has_liked?: boolean
+  likes_count?: number
+  comments_count?: number
 }
 
 export default function FeedPage() {
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
+  const [currentUserId, setCurrentUserId] = useState<string>('')
   const supabase = createClient()
 
   async function loadPosts() {
     setLoading(true)
 
+    // Get current user first
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) setCurrentUserId(user.id)
+
     // Buscar posts
     const { data: postsData, error: postsError } = await supabase
       .from('posts')
-      .select('*')
+      .select(`
+        *,
+        profiles:user_id (
+          full_name,
+          avatar_url,
+          verified_badge
+        ),
+        reactions (
+          user_id,
+          type
+        ),
+        comments (count)
+      `)
       .eq('status', 'PUBLISHED')
       .order('created_at', { ascending: false })
       .limit(20)
@@ -42,30 +60,17 @@ export default function FeedPage() {
       return
     }
 
-    // Buscar perfis dos autores
-    if (postsData && postsData.length > 0) {
-      const userIds = [...new Set(postsData.map((post: any) => post.user_id))]
-      const { data: profilesData } = await supabase
-        .from('profiles')
-        .select('id, full_name, avatar_url, verified_badge')
-        .in('id', userIds)
+    // Process data to include counts and user specific state
+    const processedPosts = postsData?.map((post: any) => ({
+      ...post,
+      likes_count: post.reactions?.filter((r: any) => r.type === 'LIKE').length || 0,
+      user_has_liked: user ? post.reactions?.some((r: any) => r.user_id === user.id && r.type === 'LIKE') : false,
+      comments_count: post.comments?.[0]?.count || 0,
+      // Fix profile structure if it's an array or object
+      profiles: Array.isArray(post.profiles) ? post.profiles[0] : post.profiles
+    }))
 
-      // Criar mapa de perfis
-      const profilesMap: Record<string, any> = {}
-      profilesData?.forEach((profile: any) => {
-        profilesMap[profile.id] = profile
-      })
-
-      // Combinar dados
-      const postsWithProfiles = postsData.map((post: any) => ({
-        ...post,
-        profiles: profilesMap[post.user_id]
-      }))
-      setPosts(postsWithProfiles)
-    } else {
-      setPosts([])
-    }
-
+    setPosts(processedPosts || [])
     setLoading(false)
   }
 
@@ -78,51 +83,17 @@ export default function FeedPage() {
     <main className="container mx-auto max-w-2xl px-4 py-8">
       <CreatePostForm onPostCreated={loadPosts} />
 
-      <div className="space-y-6">
+      <div className="space-y-6 mt-6">
         {loading ? (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">Carregando posts...</p>
+          <div className="flex justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) : posts?.map((post) => (
-          <Card key={post.id}>
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <Avatar>
-                  <AvatarImage src={post.profiles?.avatar_url || undefined} />
-                  <AvatarFallback>
-                    {post.profiles?.full_name?.charAt(0) || 'U'}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <div className="flex items-center gap-1">
-                    <p className="font-semibold">{post.profiles?.full_name}</p>
-                    {post.profiles?.verified_badge && (
-                      <span className="text-blue-500">✓</span>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {formatRelativeTime(post.created_at)}
-                  </p>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="whitespace-pre-wrap">{post.content}</p>
-              <div className="mt-4 flex items-center gap-6 text-muted-foreground">
-                <button className="flex items-center gap-2 hover:text-primary">
-                  <Heart className="h-5 w-5" />
-                  <span className="text-sm">0</span>
-                </button>
-                <button className="flex items-center gap-2 hover:text-primary">
-                  <MessageCircle className="h-5 w-5" />
-                  <span className="text-sm">0</span>
-                </button>
-                <button className="flex items-center gap-2 hover:text-primary">
-                  <Share2 className="h-5 w-5" />
-                </button>
-              </div>
-            </CardContent>
-          </Card>
+          <PostCard
+            key={post.id}
+            post={post}
+            currentUserId={currentUserId}
+          />
         ))}
 
         {(!loading && (!posts || posts.length === 0)) && (

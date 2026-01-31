@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { formatDate } from '@/lib/utils'
 import Link from 'next/link'
+import { EditProfileDialog } from '@/components/profile/edit-profile-dialog'
 
 export default async function ProfilePage() {
   const supabase = await createClient()
@@ -81,11 +82,14 @@ export default async function ProfilePage() {
                   )}
                 </div>
               </div>
-              <form action={handleLogout}>
-                <Button variant="outline" type="submit">
-                  Sair
-                </Button>
-              </form>
+              <div className="flex flex-col gap-2 items-end">
+                <form action={handleLogout}>
+                  <Button variant="ghost" size="sm" type="submit" className="text-muted-foreground hover:text-destructive">
+                    Sair
+                  </Button>
+                </form>
+                <EditProfileDialog profile={profile} />
+              </div>
             </div>
           </CardHeader>
           <CardContent>

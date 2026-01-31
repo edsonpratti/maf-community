@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     }
 
     const payload = await request.json()
-    
+
     // Hotmart webhook event
     const event = payload.event
     const data = payload.data
@@ -29,14 +29,14 @@ export async function POST(request: Request) {
 
     if (!customer) {
       // User not found, create pending record
-      return NextResponse.json({ 
+      return NextResponse.json({
         message: 'User not found, webhook received',
         status: 'pending'
       })
     }
 
     // Process based on event type
-    let newStatus: 'ACTIVE' | 'REVOKED' = 'ACTIVE'
+    let newStatus: 'ACTIVE' | 'REVOKED' | 'SUSPENDED' = 'ACTIVE'
     let purchaseStatus: 'APPROVED' | 'CANCELLED' | 'REFUNDED' | 'CHARGEBACK' = 'APPROVED'
 
     switch (event) {
@@ -91,7 +91,7 @@ export async function POST(request: Request) {
       })
       .eq('user_id', customer.user_id)
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       message: 'Webhook processed successfully',
       status: newStatus
     })
