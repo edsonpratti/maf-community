@@ -62,12 +62,7 @@ export default async function AdminLayout({
                 >
                   Denúncias
                 </Link>
-                <Link
-                  href="/admin/certificates"
-                  className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                >
-                  Certificados
-                </Link>
+
                 <Link
                   href="/app/feed"
                   className="border-transparent text-blue-600 hover:text-blue-800 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ml-4"

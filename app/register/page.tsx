@@ -38,14 +38,28 @@ export default function RegisterPage() {
         },
       })
 
+      console.log('SignUp Result:', data)
+
       if (error) throw error
 
-      if (data.user) {
+      if (data.user && !data.session) {
+        setError('Cadastro realizado! Por favor, verifique seu email para confirmar a conta.')
+        return
+      }
+
+      if (data.user && data.session) {
         router.push('/onboarding')
         router.refresh()
       }
     } catch (error: any) {
-      setError(error.message)
+      console.error('Register Error:', error)
+      let msg = error.message
+      if (msg.includes('already registered')) {
+        msg = 'Este email já está cadastrado. Por favor, faça login.'
+      } else if (msg.includes('password')) {
+        msg = 'A senha deve ter pelo menos 6 caracteres.'
+      }
+      setError(msg)
     } finally {
       setLoading(false)
     }

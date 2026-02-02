@@ -31,7 +31,7 @@ export default async function StatusPage() {
     },
     UNDER_REVIEW: {
       icon: AlertCircle,
-      title: 'Em Análise',
+      title: 'Sob Revisão',
       description: 'Estamos analisando seu certificado. Isso pode levar até 24 horas.',
       color: 'text-blue-600',
       bg: 'bg-blue-50',
@@ -52,8 +52,8 @@ export default async function StatusPage() {
     },
     REVOKED: {
       icon: XCircle,
-      title: 'Acesso Revogado',
-      description: 'Seu acesso foi revogado. Entre em contato com o suporte.',
+      title: 'Acesso Negado',
+      description: 'Seu certificado não foi aprovado. Por favor, envie um novo documento.',
       color: 'text-red-600',
       bg: 'bg-red-50',
     },
@@ -98,10 +98,20 @@ export default async function StatusPage() {
                 </div>
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Status:</dt>
-                  <dd className={status.color}>{profile.status_access}</dd>
+                  <dd className={status.color}>{status.title}</dd>
                 </div>
               </dl>
             </div>
+            {profile.status_access === 'REVOKED' && (
+              <div className="pt-4">
+                <a
+                  href="/onboarding"
+                  className="flex w-full justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                >
+                  Reenviar Documento
+                </a>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
