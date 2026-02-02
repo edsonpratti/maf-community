@@ -11,6 +11,7 @@ type Post = {
   content: string
   created_at: string
   user_id: string
+  media?: { type: string; path: string }[] | null
   profiles?: {
     full_name: string | null
     avatar_url: string | null

@@ -57,7 +57,7 @@ export default function OnboardingPage() {
         console.log('Uploading certificate...')
         const fileExt = certificateFile.name.split('.').pop()
         const fileName = `${user.id}-${Date.now()}.${fileExt}`
-        const filePath = `certificates/${fileName}`
+        const filePath = `${user.id}/${fileName}` // Use user ID as folder
 
         const { error: uploadError } = await supabase.storage
           .from('certificates')

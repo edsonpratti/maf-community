@@ -108,7 +108,7 @@ export default function AdminUsersPage() {
 
       return {
         ...user,
-        certificates: sortedCerts, // Keep all for debugging? Or just latest.
+        certificates: sortedCerts,
         certificateUrl: url
       }
     }))

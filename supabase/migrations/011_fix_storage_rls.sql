@@ -18,3 +18,15 @@ CREATE POLICY "Users can view own certificates"
 ON storage.objects FOR SELECT
 TO authenticated
 USING ( bucket_id = 'certificates' AND owner = auth.uid() );
+
+-- Allow admins to view all certificates
+CREATE POLICY "Admins can view all certificates"
+ON storage.objects FOR SELECT
+TO authenticated
+USING ( 
+  bucket_id = 'certificates' AND
+  EXISTS (
+    SELECT 1 FROM profiles 
+    WHERE id = auth.uid() AND role IN ('ADMIN', 'MOD')
+  )
+);

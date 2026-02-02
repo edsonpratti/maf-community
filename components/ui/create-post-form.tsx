@@ -1,9 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from './button'
 import { Card } from './card'
+import { Image as ImageIcon, X } from 'lucide-react'
+import Image from 'next/image'
 import {
   Select,
   SelectContent,
@@ -21,7 +23,34 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
   const [category, setCategory] = useState('GERAL')
   const [loading, setLoading] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
+  const [images, setImages] = useState<File[]>([])
+  const [imagePreviews, setImagePreviews] = useState<string[]>([])
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const supabase = createClient()
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (files.length + images.length > 4) {
+      alert('Máximo de 4 imagens por post')
+      return
+    }
+
+    setImages([...images, ...files])
+    
+    // Create previews
+    files.forEach(file => {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setImagePreviews(prev => [...prev, reader.result as string])
+      }
+      reader.readAsDataURL(file)
+    })
+  }
+
+  const removeImage = (index: number) => {
+    setImages(images.filter((_, i) => i !== index))
+    setImagePreviews(imagePreviews.filter((_, i) => i !== index))
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -41,6 +70,28 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
         return
       }
 
+      // Upload images if any
+      const mediaUrls: { type: string; path: string }[] = []
+      
+      if (images.length > 0) {
+        for (const image of images) {
+          const fileExt = image.name.split('.').pop()
+          const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+          
+          const { error: uploadError } = await supabase.storage
+            .from('post-media')
+            .upload(fileName, image)
+
+          if (uploadError) {
+            console.error('Erro ao fazer upload:', uploadError)
+            continue
+          }
+
+          // Salvar apenas o caminho, não a URL
+          mediaUrls.push({ type: 'image', path: fileName })
+        }
+      }
+
       const { error } = await supabase
         .from('posts')
         .insert({
@@ -49,6 +100,7 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
           category: category,
           status: 'PUBLISHED',
           visibility: 'COMMUNITY_ONLY',
+          media: mediaUrls.length > 0 ? mediaUrls : null,
         })
 
       if (error) {
@@ -57,6 +109,8 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
       } else {
         setContent('')
         setCategory('GERAL')
+        setImages([])
+        setImagePreviews([])
         setIsExpanded(false)
         alert('Post criado com sucesso!')
         onPostCreated?.()
@@ -88,16 +142,35 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
               rows={isExpanded ? 4 : 1}
             />
 
+            {/* Image Previews */}
+            {imagePreviews.length > 0 && (
+              <div className="grid grid-cols-2 gap-2 mt-3">
+                {imagePreviews.map((preview, idx) => (
+                  <div key={idx} className="relative aspect-square rounded-lg overflow-hidden">
+                    <Image src={preview} alt="Preview" fill className="object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(idx)}
+                      className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white rounded-full p-1"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {isExpanded && (
               <div className="flex items-center justify-between mt-3 pt-3 border-t">
-                <div className="w-40">
-                  <Select value={category} onValueChange={setCategory}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Categoria" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="GERAL">Geral</SelectItem>
-                      <SelectItem value="RESULTADOS">Resultados</SelectItem>
+                <div className="flex items-center gap-2">
+                  <div className="w-40">
+                    <Select value={category} onValueChange={setCategory}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Categoria" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="GERAL">Geral</SelectItem>
+                        <SelectItem value="RESULTADOS">Resultados</SelectItem>
                       <SelectItem value="DUVIDAS">Dúvidas</SelectItem>
                       <SelectItem value="IDEIAS">Ideias</SelectItem>
                       <SelectItem value="MATERIAIS">Materiais</SelectItem>
@@ -105,6 +178,25 @@ export function CreatePostForm({ onPostCreated }: CreatePostFormProps) {
                     </SelectContent>
                   </Select>
                 </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={images.length >= 4}
+                  title="Adicionar imagens (máx. 4)"
+                >
+                  <ImageIcon className="h-5 w-5" />
+                </Button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageSelect}
+                  className="hidden"
+                />
+              </div>
                 <div className="flex gap-2">
                   <Button
                     type="button"

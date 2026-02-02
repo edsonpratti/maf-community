@@ -88,7 +88,7 @@ export function CertificateReviewDialog({
                     </Button>
                     <div className="flex gap-2">
                         <Button
-                            variant="destructive"
+                            className="bg-red-600 hover:bg-red-700 text-white"
                             onClick={() => handleAction('REJECTED')}
                             disabled={loading}
                         >
